@@ -1,75 +1,65 @@
-parameter.setting <- function(X,y,L,LambdaRange,CRange,kfold,Class){
+parameter.setting <- function(X,y,L,CRange,kfold){
 
 library(kernlab)
 
-n <- dim(X)[1]
-m <- dim(X)[2]
+# n <- dim(X)[1]
+# m <- dim(X)[2]
 
-idx <- round(runif(round(.6*nrow(X)), 1, nrow(X)))
-X.train <- X[idx,]
-X.test <- X[-idx,]
+# idx <- round(runif(round(.6*nrow(X)), 1, nrow(X)))
+# X.train <- X[idx,]
+# X.test <- X[-idx,]
 
 #CVO = cvpartition(m,'k',kfold);
 
 
 # choose best C
 
-K <- t(X)*X
-kcauc <- matrix(0,nrow=CRange,ncol=kfold)
+#K <- X%*%t(X)
 
+kcauc <- matrix(0,nrow=length(CRange),ncol=kfold)
+
+size <- round(nrow(X)/kfold)
+test.inxs <- list()
+for(i in 1:kfold){
+  start <- 1 + size*(i-1)
+  end <- min(nrow(X),size + size*(i-1))
+  test.inxs[[i]] <- start:end
+}
+library(AUC)
 for (i in 1:length(CRange)){
   c <- CRange[i]  
   for (j in 1:kfold){
-    test <- which(X.test[j] != 0)
-    train <- which(X.train[j] != 0)
-    ksvm.obj <- ksvm(Class~.,data=X[train],C=c,cross=kfold)
-    labels <- predict(ksvm.obj,test,type="response")
-    kcauc[i,j] <- auc(accuracy(X[test]$Class,response))
+    test <- test.inxs[[j]]
+    K <- as.kernelMatrix(crossprod(t(X[-test,])))
+#     ksvm.obj <- ksvm(K,y[-test],C=c,kernel='matrix',prob.model=T,type='nu-svc')
+    ok = F
+    while(ok == F) {
+      tryCatch({
+        ksvm.obj <- ksvm(K,y[-test],C=c,kernel='matrix',prob.model=T,type='nu-svc')
+        Ktest <- as.kernelMatrix(crossprod(t(X[test,]),t(X[SVindex(ksvm.obj), ])))  
+        predictions <- predict(ksvm.obj,Ktest,type='probabilities')[,2]
+        labels = y[test]
+        kcauc[i,j] <- auc(roc(predictions,labels))
+        ok = T
+      },
+      error = function(e) {
+        print('retrying ksvm')
+        print('param')
+        print(e)
+        ok = F
+      })
+    }
+#     Ktest <- as.kernelMatrix(crossprod(t(X[test,]),t(X[SVindex(ksvm.obj), ])))  
+#     predictions <- predict(ksvm.obj,Ktest,type='probabilities')[,2]
+#     labels = y[test]
+#     kcauc[i,j] <- auc(roc(predictions,labels))
   }
 }
 
-max <- -100
+a <- max(rowMeans(kcauc))
+b <- which(rowMeans(kcauc) == a)
 
-for(i in 1:nrow(kcauc)){
-  a <- max(mean(kcauc[i,]),max)
-}
+C <- CRange[b[1]]
 
-C <- CRange[a]
-
-#Choose best lambda
-
-for (i in 1:length(LambdaRange)){
-  lam <- LambdaRange(i)
-  
-  rescaled <- Rescaling(X,L,lam)
-  X.new <- rescaled[1]
-  K.new <- rescaled[2]
-  l <- rescaled[3]
-  
-  idx <- round(runif(round(.6*nrow(X.new)), 1, nrow(X.new)))
-  X.train <- X.new[idx,]
-  X.test <- X.new[-idx,]
-  
-  for (j in 1:kfold){
-    test <- which(X.test[j] != 0)
-    train <- which(X.train[j] != 0)
-    print (ksvm(X.train,C=c,cross=kfold))
-    ksvm.obj <- ksvm(Class~.,data=K.new,C=c,cross=kfold)
-    labels <- predict(ksvm.obj,X.test,type="response")
-    kcauc[i,j] <- auc(accuracy(X.test$Class,response))
-    
-    kauc(i,j) = svm(y,train,test,K.new,C)
-  }   
-}
-
-
-max <- -100
-
-for(i in 1:nrow(kcauc)){
-  a <- max(mean(kcauc[i,]),max)
-}
-
-lambda = LambdaRange(a)
-
-return (c(lambda,C))
+return (C)
 }

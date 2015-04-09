@@ -1,29 +1,40 @@
-ccSVM <- function(X,train,test,y,L,lambda,C){
+ccSVM <- function(X,y,test.ixs,L,lambda,c){
 
 rescaled <- Rescaling(X,L,lambda)
-X.new <- rescaled[1]
-K.new <- rescaled[2]
-l <- rescaled[3]
+X.new <- rescaled[[1]]
+K.new <- rescaled[[2]]
+l <- rescaled[[3]]
 
-model.new <- svm(X.new,y,C)
-pred <- predict(model.new,X.new,decision.values=TRUE)
-dec <- attr(pred,'decision.values')
-auc.comp <- auc(dec,test)
+# ksvm.obj <- ksvm(K.new[-test.ixs,-test.ixs],y[-test.ixs],C=c,kernel='matrix',prob.model=T,type='nu-svc')
+# # Ktest.new <- as.kernelMatrix(crossprod(t(X.new),t(X.new[SVindex(ksvm.obj), ]))) 
+# Ktest.new <- as.kernelMatrix(crossprod(t(X.new[test.ixs,]),t(X.new[SVindex(ksvm.obj), ])))  
+# # predictions <- predict(ksvm.obj,Ktest.new,type='probabilities')[,2]
+# predictions <- predict(ksvm.obj,Ktest.new,type='probabilities')[,2]
+# # labels <- y
+# labels <- y[test.ixs]
+# kcauc <- auc(roc(predictions,labels))
 
+ok = F
+while(ok == F) {
+  tryCatch({
+    # ksvm.obj <- ksvm(K.new,y,C=c,kernel='matrix',prob.model=T)
+    ksvm.obj <- ksvm(K.new[-test.ixs,-test.ixs],y[-test.ixs],C=c,kernel='matrix',prob.model=T,type='nu-svc')
+    # Ktest.new <- as.kernelMatrix(crossprod(t(X.new),t(X.new[SVindex(ksvm.obj), ]))) 
+    Ktest.new <- as.kernelMatrix(crossprod(t(X.new[test.ixs,]),t(X.new[SVindex(ksvm.obj), ])))  
+    # predictions <- predict(ksvm.obj,Ktest.new,type='probabilities')[,2]
+    predictions <- predict(ksvm.obj,Ktest.new,type='probabilities')[,2]
+    # labels <- y
+    labels <- y[test.ixs]
+    kcauc <- auc(roc(predictions,labels))
+    ok <- T
+  },
+  error = function(e) {
+    print('retrying ksvm')
+    print('run')
+    print(e)
+    ok <- F
+  })
+}
 
-#Matlab stuff
-# model.new = svmtrain(y(train), [(1:length(train))' K.new(train,train)], ['-c ' num2str(C) ' -t 4']);'
-# [Predict.label, accuracy, dec] = svmpredict(y(test), [(1:length(test))' K.new(test,train)], model.new);' 
-# label = model_new.Label
-# auc = ComputAuc(dec,y(test),label(1),label(2))
-
-#Matlab stuff
-# svind = model_new.SVs
-# sv = X.new(:,svind)
-# alpha = model_new.sv_coef
-# w.new = sv*alpha
-# w = w.new./l
-
-#return (c(predict.label, dec, accuracy, sv, w))
-return (auc.comp)
+return(list(kcauc,predict(ksvm.obj,Ktest.new,type='probabilities')[,2]))
 }

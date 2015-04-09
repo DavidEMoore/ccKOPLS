@@ -1,27 +1,28 @@
 #To do rescaling on the original data        
 Rescaling <- function(X,L,lambda){
+  
+  #instead of lambda, nox
 
 n <- dim(X)[1]
 m <- dim(X)[2]
 
-H <- diag(m,m)-1/m*matrix(1,m,m)
-L <- H*L*H/((m-1)^2)
+H <- diag(n,n)-1/n*matrix(1,n,n)
+L <- H%*%L%*%H/((m-1)^2)
 
 l <- c()
 if (lambda > 0){
-  for (i in 1:n){
-    xi <- X[i,]
-    l[i] <- sqrt(lambda*xi*L*t(xi)+1)
-            X[i,] <- xi/l[i]
+  for (i in 1:m){
+    xi <- X[,i]
+    l[i] <- sqrt(lambda*t(xi)%*%L%*%xi+1)
+    X[,i] <- xi/l[i]
   }             
 l = t(l)
-}
-else{
-  l = ones(n,1)
+} else{
+  l = matrix(1,m,1)
 }
 
-X_new = X
-K_new = t(X_new)*X_new
+X.new = X
+K.new = X.new%*%t(X.new)
 
-return (c(X_new,K_new,l))
+return (list(X.new,K.new,l))
 }
