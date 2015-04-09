@@ -1,4 +1,4 @@
-kopls.demo <- function(X,y,L,kfold,idx){
+kopls.demo <- function(X,y,L,kfold){
 
 library(kopls)
 library(kernlab)
@@ -52,11 +52,11 @@ for(i in 1:kfold){
 
 for (i in 1:length(LambdaRange)){
   lambda <- LambdaRange[i]
-  rescaled <- Rescaling(X,L,lambda)
-  X.new <- rescaled[[1]]
-  K.new <- rescaled[[2]]
-  n.list <- rescaled[[3]]
   for (j in 1:kfold){
+    rescaled <- Rescaling(X,L,lambda)
+    X.new <- rescaled[[1]]
+    K.new <- rescaled[[2]]
+    n.list <- rescaled[[3]]
     test <- test.inxs[[j]]
     modelCV <- koplsCV(K.new,ytr,1,10,nrcv=7,cvType='nfold',preProcK='mc',preProcY='mc',modelType='da')
     modelOrg <- koplsModel(K.new[-test,-test],ytr[-test,],1,nox,'mc','mc')
@@ -67,9 +67,14 @@ for (i in 1:length(LambdaRange)){
 
 a <- max(rowMeans(kcauc))
 b <- which(rowMeans(kcauc) == a)
+print('kcauc = ')
+print(kcauc)
+print('a = ')
+print(a)
 
 lambda <- LambdaRange[b[1]]
-
+print('lambda = ')
+print(lambda)
 # koplsPlotCVDiagnostics(modelCV)
 # title("Statistics from K-OPLS cross-validation of original data")
 # 
