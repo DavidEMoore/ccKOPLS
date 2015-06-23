@@ -2,20 +2,6 @@ parameter.setting <- function(X,y,L,CRange,kfold){
 
 library(kernlab)
 
-# n <- dim(X)[1]
-# m <- dim(X)[2]
-
-# idx <- round(runif(round(.6*nrow(X)), 1, nrow(X)))
-# X.train <- X[idx,]
-# X.test <- X[-idx,]
-
-#CVO = cvpartition(m,'k',kfold);
-
-
-# choose best C
-
-#K <- X%*%t(X)
-
 kcauc <- matrix(0,nrow=length(CRange),ncol=kfold)
 
 size <- round(nrow(X)/kfold)
@@ -62,4 +48,18 @@ b <- which(rowMeans(kcauc) == a)
 C <- CRange[b[1]]
 
 return (C)
+
+# n <- dim(X)[1]
+# m <- dim(X)[2]
+
+# idx <- round(runif(round(.6*nrow(X)), 1, nrow(X)))
+# X.train <- X[idx,]
+# X.test <- X[-idx,]
+
+#CVO = cvpartition(m,'k',kfold);
+
+
+# choose best C
+
+#K <- X%*%t(X)
 }

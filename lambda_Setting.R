@@ -47,4 +47,5 @@ b <- which(rowMeans(kcauc) == a)
 lambda <- LambdaRange[b[1]]
 
 return(lambda)
+
 }
