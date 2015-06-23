@@ -20,7 +20,7 @@ for(i in 1:length(test.ixs)){
   while(ok == F) {
     tryCatch({
       # ksvm.obj <- ksvm(K.new,y,C=c,kernel='matrix',prob.model=T)
-      ksvm.obj <- ksvm(K.new[-test.ixs[[i]],-test.ixs],y[-test.ixs[[i]]],C=c,kernel='matrix',prob.model=T,type='nu-svc')
+      ksvm.obj <- ksvm(K.new[-test.ixs[[i]],-test.ixs[[i]]],y[-test.ixs[[i]]],C=c,kernel='matrix',prob.model=T,type='nu-svc')
       # Ktest.new <- as.kernelMatrix(crossprod(t(X.new),t(X.new[SVindex(ksvm.obj), ]))) 
       Ktest.new <- as.kernelMatrix(crossprod(t(X.new[test.ixs[[i]],]),t(X.new[SVindex(ksvm.obj), ])))  
       # predictions <- predict(ksvm.obj,Ktest.new,type='probabilities')[,2]
