@@ -1,3 +1,16 @@
+#' Confounder correcting kernel O-PLS
+#'
+#' Does something
+#'
+#' @param X - input data (rows are input patterns)
+#' @param y - labels
+#' @param L - a thing
+#' @param kfold - number of partitions for k-fold cross-validation
+#'
+#' @examples
+#' download.example.data()
+#'
+#' @export
 kopls.demo <- function(X,y,L,kfold){
   
   library(kopls)

@@ -1,3 +1,20 @@
+#' Parameter setting
+#'
+#' Does thing
+#'
+#' @param X - a thing
+#' @param y - another thing
+#' @param L - thing 3
+#' @param CRange - thing 4
+#' @pram kfold - thing 5
+#'
+#' @return something
+#'
+#' @examples
+#' download.example.data()
+#' C <- parameter.setting(X,y,L,CRange,kfold)
+#'
+#' @export
 parameter.setting <- function(X,y,L,CRange,kfold){
 
 library(kernlab)

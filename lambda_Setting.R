@@ -1,3 +1,18 @@
+#' Lambda setting
+#'
+#' Does something
+#'
+#' @param X - input data (rows are input patterns)
+#' @param y - labels
+#' @param L - a thing
+#' @param LambdaRange - the range over which to optimize lambda
+#' @param c - SVM regularization parameter
+#' @param kfold - number of partitions for k-fold cross-validation
+#'
+#' @examples
+#' download.example.data()
+#'
+#' @export
 lambda.setting <- function(X,y,L,LambdaRange,c,kfold){
   
 library(kernlab)

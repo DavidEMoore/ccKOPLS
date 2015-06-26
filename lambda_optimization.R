@@ -1,3 +1,19 @@
+#' Lambda optimization
+#'
+#' Does something
+#'
+#' @param X - input data (rows are input patterns)
+#' @param ytr - labels (transposed)
+#' @param L - a thing
+#' @param nox - another thing
+#' @param LambdaRange - the range over which to optimize lambda
+#' @param c - SVM regularization parameter
+#' @param kfold - number of partitions for k-fold cross-validation
+#'
+#' @examples
+#' download.example.data()
+#'
+#' @export
 optimize.lambda <- function(X,ytr,L,nox,LambdaRange,kfold){
 
 LambdaRange <- c(1e-8,1e-4,1e-2,1,1e+2,1e+4,1e+8)

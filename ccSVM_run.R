@@ -1,3 +1,20 @@
+#' Confounder correcting SVM
+#'
+#' Does things
+#'
+#' @param X - input data (rows are input patterns)
+#' @param y - labels
+#' @param L - stuff
+#' @param lambda - a thing
+#' @param c - SVM regularization parameter
+#' @param kfold - number of partitions for k-fold cross-validation
+#'
+#' @return kcauc, stuff
+#'
+#' @examples
+#' download.example.data()
+#'
+#' @export
 ccSVM <- function(X,y,L,lambda,c,kfold){
 
 rescaled <- Rescaling(X,L,lambda)

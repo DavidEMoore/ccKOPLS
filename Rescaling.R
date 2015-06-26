@@ -1,4 +1,18 @@
-#To do rescaling on the original data        
+#' Rescaling
+#'
+#' Rescales the original data
+#'
+#' @param X - stuff
+#' @param L - other stuff
+#' @param lambda - some param
+#'
+#' @return scaled data
+#'
+#' @examples
+#' download.example.data()
+#' list(X.new,K.new,l) <- Rescaling(X,L,lambda)
+#'
+#' @export
 Rescaling <- function(X,L,lambda){
   
   #instead of lambda, nox

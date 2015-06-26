@@ -1,3 +1,16 @@
+#' Nox optimization
+#'
+#' Does something
+#'
+#' @param X - input data (rows are input patterns)
+#' @param ytr - labels (transposed)
+#' @param noxRange - the range over which to optimize nox
+#' @param kfold - number of partitions for k-fold cross-validation
+#'
+#' @examples
+#' download.example.data()
+#'
+#' @export
 optimize.nox <- function(X,ytr,noxRange,kfold){
   
   kcauc <- matrix(0, nrow=length(noxRange),ncol=kfold)
