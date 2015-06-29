@@ -134,6 +134,36 @@ y <- factor(y[,1])
 L <- as.matrix(L)
 
 set.seed(0, kind = NULL, normal.kind = NULL)
-method = 'cckopls'
-kfold = 5
-cc.auc(X,y,L,kfold,method=method)
+for () {
+  method = 'cckopls'
+  kfold = 5
+  cc.auc(X,y,L,kfold,method=method)
+}
+
+set.seed(0, kind = NULL, normal.kind = NULL)
+for () {
+  method = 'kopls'
+  kfold = 5
+  cc.auc(X,y,L,kfold,method=method)
+}
+
+set.seed(0, kind = NULL, normal.kind = NULL)
+for () {
+  method = 'ccsvm'
+  kfold = 5
+  cc.auc(X,y,L,kfold,method=method)
+}
+
+set.seed(0, kind = NULL, normal.kind = NULL)
+for () {
+  method = 'svm'
+  kfold = 5
+  cc.auc(X,y,L,kfold,method=method)
+}
+
+set.seed(0, kind = NULL, normal.kind = NULL)
+for () {
+  method = 'koplsnox0'
+  kfold = 5
+  cc.auc(X,y,L,kfold,method=method)
+}
