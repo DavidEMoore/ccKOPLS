@@ -1,4 +1,4 @@
-kopls.demo <- function(X,y,L,kfold){
+kopls.demo <- function(X,y,L,kfold,t){
   
   library(kopls)
   library(kernlab)
@@ -7,13 +7,12 @@ kopls.demo <- function(X,y,L,kfold){
   library(permute)
   
   #optimize nox
-  noxRange <- 1:5
-  kcauc <- matrix(0, nrow=length(noxRange),ncol=kfold)
+  noxRange <- 0:5
+  kcauc <- matrix(0, nrow=1,ncol=kfold)
   ytr <- matrix(0,nrow=length(y),2)
   ytr[y==1,1] <- 1
   ytr[y==2,2] <- 1
   
-  t <- shuffle(nrow(X))
   size <- round(nrow(X)/kfold)
   test.inxs <- list()
   for(i in 1:kfold){
@@ -27,7 +26,9 @@ kopls.demo <- function(X,y,L,kfold){
   # test.inxs[[i]]
   
   n <- c()
-  l <- c()
+  m <- list()
+  r <- list()
+  labels <- list()
   
   for (i in 1:length(test.inxs)) {
     train.X <- X[-test.inxs[[i]],]
@@ -49,10 +50,14 @@ kopls.demo <- function(X,y,L,kfold){
     modelOrg <- koplsModel(K.new[-test.inxs[[i]],-test.inxs[[i]]],ytr[-test.inxs[[i]],],1,n[i],'mc','mc')
     modelOrgPred<-koplsPredict(K.new[test.inxs[[i]],-test.inxs[[i]]],K.new[test.inxs[[i]],test.inxs[[i]]],K.new[-test.inxs[[i]],-test.inxs[[i]]],modelOrg,rescaleY=TRUE)
     #kcauc <- auc(roc(modelOrgPred$Yhat[,2],y[test.inxs[[i]]]))
-    r <- roc(modelOrgPred$Yhat[,2],y[test.inxs[[i]]])
-    print(auc(r))
-    kcauc[1,i] <- auc(r)
+    roc.curve <- roc(modelOrgPred$Yhat[,2],y[test.inxs[[i]]])
+    print(auc(roc.curve))
+    kcauc[1,i] <- auc(roc.curve)
     #plot(r,main='ROC Curve for ccKOPLS')
+    m[[i]] <- modelOrgPred$Yhat[,2]
+    labels[[i]] <- y[test.inxs[[i]]]
+    r[[i]] <- roc.curve
   }
   
+  return (list(kcauc,m,labels,r))
 }

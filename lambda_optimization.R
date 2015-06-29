@@ -18,7 +18,7 @@ for (i in 1:length(LambdaRange)){
     K.new <- rescaled[[2]]
     # n.list <- rescaled[[3]]
     test <- test.inxs[[j]]
-    modelCV <- koplsCV(K.new,ytr,1,10,nrcv=7,cvType='nfold',preProcK='mc',preProcY='mc',modelType='da')
+    #modelCV <- koplsCV(K.new,ytr,1,10,nrcv=7,cvType='nfold',preProcK='mc',preProcY='mc',modelType='da')
     modelOrg <- koplsModel(K.new[-test,-test],ytr[-test,],1,nox,'mc','mc')
     modelOrgPred<-koplsPredict(K.new[test,-test],K.new[test,test],K.new[-test,-test],modelOrg,rescaleY=TRUE)
     kcauc[i,j] <- auc(roc(modelOrgPred$Yhat[,2],y[test]))

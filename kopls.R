@@ -8,7 +8,7 @@ library(permute)
 
 #optimize nox
 noxRange <- 1:5
-kcauc <- matrix(0, nrow=length(noxRange),ncol=kfold)
+kcauc <- matrix(0, nrow=1,ncol=kfold)
 ytr <- matrix(0,nrow=length(y),2)
 ytr[y==1,1] <- 1
 ytr[y==2,2] <- 1
@@ -28,6 +28,9 @@ for(i in 1:kfold){
 
 n <- c()
 l <- c()
+m <- list()
+r <- list()
+labels <- list()
 
 for (i in 1:length(test.inxs)) {
   train.X <- X[-test.inxs[[i]],]
@@ -50,15 +53,18 @@ for (i in 1:length(test.inxs)) {
   modelOrg <- koplsModel(K.new[-test.inxs[[i]],-test.inxs[[i]]],ytr[-test.inxs[[i]],],1,n[i],'mc','mc')
   modelOrgPred<-koplsPredict(K.new[test.inxs[[i]],-test.inxs[[i]]],K.new[test.inxs[[i]],test.inxs[[i]]],K.new[-test.inxs[[i]],-test.inxs[[i]]],modelOrg,rescaleY=TRUE)
   #kcauc <- auc(roc(modelOrgPred$Yhat[,2],y[test.inxs[[i]]]))
-  r <- roc(modelOrgPred$Yhat[,2],y[test.inxs[[i]]])
-  print(auc(r))
-  kcauc[1,i] <- auc(r)
+  roc.curve <- roc(modelOrgPred$Yhat[,2],y[test.inxs[[i]]])
+  print(auc(roc.curve))
+  kcauc[1,i] <- auc(roc.curve)
   #plot(r,main='ROC Curve for ccKOPLS')
+  m[[i]] <- modelOrgPred$Yhat[,2]
+  labels[[i]] <- y[test.inxs[[i]]]
+  r[[i]] <- roc.curve
   
 }
 
-# nox <- mfv(n)[1]
-# lambda <- mfv(l)[1]
+#nox <- mfv(n)[1]
+#lambda <- mfv(l)[1]
 
 # for (i in 1:length(noxRange)){
 #   n <- noxRange[i]
@@ -129,26 +135,26 @@ for (i in 1:length(test.inxs)) {
 # X.new <- rescaled[[1]]
 # K.new <- rescaled[[2]]
 # n.list <- rescaled[[3]]
-# train.idx <- round(runif(round(.7*nrow(K.new)), 1, nrow(K.new)))
+# #train.idx <- round(runif(round(.7*nrow(K.new)), 1, nrow(K.new)))
 # #modelCV <- koplsCV(K.new,ytr,1,10,nrcv=7,cvType='nfold',preProcK='mc',preProcY='mc',modelType='da')
 # modelOrg <- koplsModel(K.new[train.idx,train.idx],ytr[train.idx,],1,nox,'mc','mc')
 # modelOrgPred<-koplsPredict(K.new[-train.idx,train.idx],K.new[-train.idx,-train.idx],K.new[train.idx,train.idx],modelOrg,rescaleY=TRUE)
-# #kcauc <- auc(roc(modelOrgPred$Yhat[,2],y[-train.idx]))
+# kcauc <- auc(roc(modelOrgPred$Yhat[,2],y[-train.idx]))
 # r <- roc(modelOrgPred$Yhat[,2],y[-train.idx])
 # plot(r,main='ROC Curve for ccKOPLS')
 
 
-rescaled <- Rescaling(X,L,0)
-X.reg.new <- rescaled[[1]]
-K.reg.new <- rescaled[[2]]
-n.reg.list <- rescaled[[3]]
-train.idx <- round(runif(round(.7*nrow(K.reg.new)), 1, nrow(K.reg.new)))
-#modelCV <- koplsCV(K.reg.new,ytr,1,10,nrcv=7,cvType='nfold',preProcK='mc',preProcY='mc',modelType='da')
-modelOrg <- koplsModel(K.reg.new[train.idx,train.idx],ytr[train.idx,],1,nox,'mc','mc')
-modelOrgPred.reg<-koplsPredict(K.reg.new[-train.idx,train.idx],K.reg.new[-train.idx,-train.idx],K.reg.new[train.idx,train.idx],modelOrg,rescaleY=TRUE)
-kcauc.reg <- auc(roc(modelOrgPred.reg$Yhat[,2],y[-train.idx]))
+# rescaled <- Rescaling(X,L,lambda)
+# X.reg.new <- rescaled[[1]]
+# K.reg.new <- rescaled[[2]]
+# n.reg.list <- rescaled[[3]]
+# train.idx <- round(runif(round(.7*nrow(K.reg.new)), 1, nrow(K.reg.new)))
+# #modelCV <- koplsCV(K.reg.new,ytr,1,10,nrcv=7,cvType='nfold',preProcK='mc',preProcY='mc',modelType='da')
+# modelOrg <- koplsModel(K.reg.new[train.idx,train.idx],ytr[train.idx,],1,nox,'mc','mc')
+# modelOrgPred.reg<-koplsPredict(K.reg.new[-train.idx,train.idx],K.reg.new[-train.idx,-train.idx],K.reg.new[train.idx,train.idx],modelOrg,rescaleY=TRUE)
+# kcauc.reg <- auc(roc(modelOrgPred.reg$Yhat[,2],y[-train.idx]))
 
 
-return (list(kcauc,kcauc.reg,modelOrgPred$Yhat[,2],modelOrgPred.reg$Yhat[,2]))
+return (list(kcauc,m,labels,r,t))
 
 }

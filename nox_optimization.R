@@ -17,12 +17,12 @@ optimize.nox <- function(X,ytr,noxRange,kfold){
       test <- test.inxs[[j]]
       #     K <- as.kernelMatrix(crossprod(t(X[-test,])))
       K <- as.kernelMatrix(crossprod(t(X)))
-      modelCV <- koplsCV(K,ytr,1,10,nrcv=7,cvType='nfold',preProcK='mc',preProcY='mc',modelType='da')
-      modelOrg <- koplsModel(K[-test,-test],ytr[-test,],1,n,'mc','mc')
+      #modelCV <- koplsCV(K,ytr,1,10,nrcv=7,cvType='nfold',preProcK='mc',preProcY='mc',modelType='da')
+      modelOrg <- koplsModel(K[-test,-test],ytr[-test,],1,n,preProcK='mc',preProcY='mc')
       #     modelOrg <- koplsModel(K,ytr,1,n,'mc','mc')
-      modelOrgPred<-koplsPredict(K[test,-test],K[test,test],K[-test,-test],modelOrg,rescaleY=TRUE)
+      modelOrgPred<-koplsPredict(K[test,-test],K[test,test],K[-test,-test],modelOrg,n,rescaleY=TRUE)
       #     modelOrgPred<-koplsPredict(K,K,K,modelOrg,rescaleY=TRUE)
-      kcauc[i,j] <- auc(roc(modelOrgPred$Yhat[,2],factor(ytr[test])))
+      kcauc[i,j] <- auc(roc(modelOrgPred$Yhat[,2],factor(ytr[test,2])))
     }
   }
   

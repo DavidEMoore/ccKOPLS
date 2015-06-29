@@ -1,4 +1,4 @@
-ccSVM.demo <- function(X,y,L,kfold){
+ccSVM.demo <- function(X,y,L,kfold,t){
 
 #setting up to select parameter lambda and C
 LambdaRange <- c(1e-8,1e-4,1e-2,1,1e+2,1e+4,1e+8)
@@ -6,7 +6,6 @@ CRange <- c(2^-8,2^-4,2^-2,2^0,2^2,2^4,2^8)
 
 #kfold CV
 library(permute)
-t <- shuffle(nrow(X))
 size <- round(nrow(X)/kfold)
 test.inxs <- list()
 for(i in 1:kfold){
@@ -14,6 +13,15 @@ for(i in 1:kfold){
   end <- min(nrow(X),size + size*(i-1))
   test.inxs[[i]] <- t[start:end]
 }
+
+cckcauc <- matrix(0, nrow=1,ncol=kfold)
+kcauc <- matrix(0, nrow=1, ncol=kfold)
+ccm <- list()
+ccr <- list()
+cclabels <- list()
+m <- list()
+r <- list()
+labels <- list()
 
 for(i in 1:length(test.inxs)){
   train.X <- X[-test.inxs[[i]],-test.inxs[[i]]]
@@ -29,12 +37,20 @@ for(i in 1:length(test.inxs)){
   
   #to do prediction on test data using ccSVM
   ccSVM.predict <- ccSVM(X,y,L,lambda,C,2)
+  cckcauc[1,i] <- ccSVM.predict[[1]]
+  ccm[[i]] <- ccSVM.predict[[2]]
+  cclabels[[i]] <- ccSVM.predict[[3]]
+  ccr[[i]] <- ccSVM.predict[[4]]
   
   #to do prediction on test data using standard SVM, setting lambda as 0
-  cauc <- ccSVM(X,y,L,0,C) 
+  cauc <- ccSVM(X,y,L,0,C,2)
+  kcauc[1,i] <- cauc[[1]]
+  m[[i]] <- cauc[[2]]
+  labels[[i]] <- cauc[[3]]
+  r[[i]] <- cauc[[4]]
 }
 
-return (list(ccSVM.predict[[1]],cauc[[1]],ccSVM.predict[[2]],cauc[[2]]))
+return (list(cckcauc,kcauc,ccm,m,cclabels,labels,ccr,r))
 #bye bye
 
 

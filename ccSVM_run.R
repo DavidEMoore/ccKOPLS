@@ -27,6 +27,7 @@ for(i in 1:length(test.ixs)){
       predictions <- predict(ksvm.obj,Ktest.new,type='probabilities')[,2]
       # labels <- y
       labels <- y[test.ixs[[i]]]
+      r <- roc(predictions,labels)
       kcauc <- auc(roc(predictions,labels))
       ok <- T
     },
@@ -39,7 +40,7 @@ for(i in 1:length(test.ixs)){
   } 
 }
 
-return(list(kcauc,predict(ksvm.obj,Ktest.new,type='probabilities')[,2]))
+return(list(kcauc,predictions,labels,r))
 
 
 # ksvm.obj <- ksvm(K.new[-test.ixs,-test.ixs],y[-test.ixs],C=c,kernel='matrix',prob.model=T,type='nu-svc')
