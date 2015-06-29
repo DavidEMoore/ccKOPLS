@@ -1,5 +1,4 @@
 
-setwd('~/Downloads')
 #load the data
 X <- read.csv('X.csv',header=FALSE)
 X <- t(X)
@@ -8,6 +7,7 @@ L <- read.csv('L.csv',header=FALSE)
 y <- as.matrix(y)
 y <- factor(y[,1])
 L <- as.matrix(L)
+
 
 #construct matrices for display
 #ccauc1 <- data.frame(ccSVM=0,SVM=0,ccOPLS=0,OPLS=0)  #auc
@@ -29,7 +29,6 @@ cckopls.predict1 <- list()
 kopls.predict1 <- list()
 ccSVM.predict1 <- list()
 
-set.seed(0, kind = NULL, normal.kind = NULL)
 
 for (i in 11:50){  #number of k-fold CV iterations
   #cckopls
