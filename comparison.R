@@ -130,6 +130,7 @@
 # X is all the data
 # y is all the labels
 # L is the side matrix
+setwd('~/ccSVM/ccSVM/')
 X <- read.csv('X.csv',header=FALSE)
 X <- t(X)
 y <- read.csv('y.csv',header=FALSE)
@@ -285,10 +286,10 @@ s <- sd(as.matrix(cckoplsauc1[-1]))
 m <- mean(as.matrix(cckoplsauc1[-1]))
 ccconf1[1,3] <- m
 n <- ncol(cckoplsauc1[-1])
-error <- qt(0.975,df=n-1)*s/sqrt(n)
-left <- m - error
+error <- s/sqrt(n)
+left <- m - 1.645*error
 ccconf1[2,3] <- left
-right <- m + error
+right <- m + 1.645*error
 ccconf1[3,3] <- right
 
 #Calculate CI of O-PLS
@@ -296,10 +297,10 @@ s <- sd(as.matrix(koplsauc))
 m <- mean(as.matrix(koplsauc))
 ccconf1[1,4] <- m
 n <- ncol(koplsauc)
-error <- qt(0.975,df=n-1)*s/sqrt(n)
-left <- m - error
+error <- s/sqrt(n)
+left <- m - 1.645*error
 ccconf1[2,4] <- left
-right <- m + error
+right <- m + 1.645*error
 ccconf1[3,4] <- right
 
 #Calculate CI of ccSVM
@@ -307,10 +308,10 @@ s <- sd(as.matrix(ccSVMauc[-1]))
 m <- mean(as.matrix(ccSVMauc[-1]))
 ccconf1[1,1] <- m
 n <- ncol(ccSVMauc[-1])
-error <- qt(0.975,df=n-1)*s/sqrt(n)
-left <- m - error
+error <- s/sqrt(n)
+left <- m - 1.645*error
 ccconf1[2,1] <- left
-right <- m + error
+right <- m + 1.645*error
 ccconf1[3,1] <- right
 
 #Calculate CI of SVM
@@ -318,10 +319,10 @@ s <- sd(as.matrix(SVMauc))
 m <- mean(as.matrix(SVMauc))
 ccconf1[1,2] <- m
 n <- ncol(SVMauc)
-error <- qt(0.975,df=n-1)*s/sqrt(n)
-left <- m - error
+error <- s/sqrt(n)
+left <- m - 1.645*error
 ccconf1[2,2] <- left
-right <- m + error
+right <- m + 1.645*error
 ccconf1[3,2] <- right
 
 #Calculate CI of ccnox0
@@ -329,10 +330,10 @@ s <- sd(as.matrix(ccnox0auc[-1]))
 m <- mean(as.matrix(ccnox0auc[-1]))
 ccconf1[1,5] <- m
 n <- ncol(ccnox0auc[-1])
-error <- qt(0.975,df=n-1)*s/sqrt(n)
-left <- m - error
+error <- s/sqrt(n)
+left <- m - 1.645*error
 ccconf1[2,5] <- left
-right <- m + error
+right <- m + 1.645*error
 ccconf1[3,5] <- right
 
 #Calculate CI of nox0
@@ -340,8 +341,8 @@ s <- sd(as.matrix(nox0auc))
 m <- mean(as.matrix(nox0auc))
 ccconf1[1,6] <- m
 n <- ncol(nox0auc)
-error <- qt(0.975,df=n-1)*s/sqrt(n)
-left <- m - error
+error <- s/sqrt(n)
+left <- m - 1.645*error
 ccconf1[2,6] <- left
-right <- m + error
+right <- m + 1.645*error
 ccconf1[3,6] <- right

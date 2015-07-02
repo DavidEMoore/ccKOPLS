@@ -8,7 +8,6 @@ optimize.cckopls <- function(X,ytr,L,noxRange,LambdaRange,kfold){ #optimize ccko
     end <- min(nrow(X),size + size*(i-1))
     test.inxs[[i]] <- start:end
   }
-  
   print('optimizing nox...')
   for (i in 1:length(noxRange)){
     n <- noxRange[i]
@@ -17,7 +16,9 @@ optimize.cckopls <- function(X,ytr,L,noxRange,LambdaRange,kfold){ #optimize ccko
       #     K <- as.kernelMatrix(crossprod(t(X[-test,])))
       K <- as.kernelMatrix(crossprod(t(X)))
       #modelCV <- koplsCV(K,ytr,1,10,nrcv=7,cvType='nfold',preProcK='mc',preProcY='mc',modelType='da')
+      #first is for microarray, second for tb, something about y being different, need to go back and fix
       modelOrg <- koplsModel(K[-test,-test],ytr[-test,],1,n,preProcK='mc',preProcY='mc')
+      #modelOrg <- koplsModel(K[-test,-test],ytr[-test],1,n,preProcK='mc',preProcY='mc')
       #     modelOrg <- koplsModel(K,ytr,1,n,'mc','mc')
       modelOrgPred<-koplsPredict(K[test,-test],K[test,test],K[-test,-test],modelOrg,n,rescaleY=TRUE)
       #     modelOrgPred<-koplsPredict(K,K,K,modelOrg,rescaleY=TRUE)

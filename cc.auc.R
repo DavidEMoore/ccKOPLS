@@ -8,9 +8,11 @@ cc.auc <- function(X,y,L,kfold,method){ #compute auc of method selected - curren
   t <- shuffle(nrow(X))
 
   kcauc <- matrix(0, nrow=1,ncol=kfold)
-  ytr <- matrix(0,nrow=length(y),kfold)
-  ytr[y==1,1] <- 1
-  ytr[y==2,2] <- 1
+  ytr <- matrix(0,nrow=length(y),2)
+  #ytr[y==1,1] <- 1
+  #ytr[y==2,2] <- 1
+  ytr[y==0,1] <- 1
+  ytr[y==1,2] <- 1
   
   size <- round(nrow(X)/kfold)
   test.inxs <- list()
