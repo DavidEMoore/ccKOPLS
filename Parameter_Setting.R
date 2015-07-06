@@ -1,3 +1,5 @@
+#Optimizes C from range of possible C's, where C is the trade-off between margin maximization and training error minimization.
+
 parameter.setting <- function(X,y,L,CRange,kfold){
 
 library(kernlab)
