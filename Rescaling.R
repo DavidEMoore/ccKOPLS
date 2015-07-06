@@ -1,3 +1,5 @@
+#Uses optimized lambda to rescale K (the kernel matrix) by way of X (data set), returns rescaled X and K
+
 #To do rescaling on the original data        
 Rescaling <- function(X,L,lambda){
   
