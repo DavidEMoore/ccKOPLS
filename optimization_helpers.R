@@ -166,7 +166,7 @@ optimize.ccSVM <- function(X,ytr,L,CRange,LambdaRange,kfold=2){ #optimize ccSVM 
       rescaled <- Rescaling(X,L,lam)
       X.new <- rescaled[[1]]
       K.new <- rescaled[[2]]
-      l <- rescaled[[3]]
+      #l <- rescaled[[3]]
       ok <- F
       while(ok == F) {
         tryCatch({
