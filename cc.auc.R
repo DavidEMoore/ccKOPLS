@@ -1,3 +1,5 @@
+#optimizes parameters of selected 'method,' calculates five-fold auc, returns scores, labels, roc curve statistics, and auc
+
 library(kopls)
 library(kernlab)
 library(AUC)
