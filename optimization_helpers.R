@@ -1,3 +1,5 @@
+#optimizes nox and lambda for cckopls, and lambda and C for ccSVM, other parameters to be added as methods are added
+
 optimize.cckopls <- function(X,ytr,L,noxRange,LambdaRange,kfold){ #optimize cckopls/kopls params
   
   kcauc <- matrix(0, nrow=length(noxRange),ncol=kfold)
