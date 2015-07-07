@@ -1,11 +1,22 @@
-#optimizes parameters of selected 'method,' calculates five-fold auc, returns scores, labels, roc curve statistics, and auc
-
 library(kopls)
 library(kernlab)
 library(AUC)
 library(modeest)
 library(permute)
 
+#' Optimize parameters for selected method
+#'
+#' Optimizes parameters for the selected `method', calculates 5-fold AUC,
+#'  and yields scores, labels, ROC curve statistics, and AUC
+#'
+#' @param X - input data
+#' @param y - labels
+#' @param kfold - number of folds for kfold CV
+#' @param method - one of 'cckopls', 'kopls', 'nox0', 'ccnox0', 'ccsvm', 'svm'
+#'
+#' @return kcauc, m, labels, r
+#'
+#' @export
 cc.auc <- function(X,y,L,kfold,method){ #compute auc of method selected - currently kopls/SVM
   t <- shuffle(nrow(X))
 
