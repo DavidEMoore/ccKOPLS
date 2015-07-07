@@ -1,3 +1,18 @@
+#Optimizes C from range of possible C's, where C is the trade-off between margin maximization and training error minimization.
+
+#' Parameter setting
+#'
+#' Optimizes C from a range of C's, where C is the trade-off between margin
+#' maximization and training error minimization
+#'
+#' @param X - input data
+#' @param y - labels
+#' @param CRange - list of possible C values
+#' @param kfold - number of folds for CV
+#'
+#' @return C - the optimized C value
+#'
+#' @export
 parameter.setting <- function(X,y,L,CRange,kfold){
 
 library(kernlab)

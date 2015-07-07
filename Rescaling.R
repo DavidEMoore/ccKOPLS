@@ -1,4 +1,17 @@
-#To do rescaling on the original data        
+#Uses optimized lambda to rescale K (the kernel matrix) by way of X (data set), returns rescaled X and K
+
+#' Kernel matrix rescaling
+#'
+#' Uses an optimized lambda to rescale K (the kernel matrix) by way of X
+#' (the data set)
+#'
+#' @param X - input data matrix
+#' @param L - side information matrix
+#' @param lambda - optimized lambda value (see Li et al.)
+#'
+#' @return the rescaled matrices X and K
+#'
+#' @export
 Rescaling <- function(X,L,lambda){
   
   #instead of lambda, nox
@@ -24,5 +37,5 @@ l = t(l)
 X.new = X
 K.new = X.new%*%t(X.new)
 
-return (list(X.new,K.new,l))
+return (list(X.new,K.new))
 }
