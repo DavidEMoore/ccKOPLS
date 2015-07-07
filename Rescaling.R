@@ -9,7 +9,7 @@
 #' @param L - side information matrix
 #' @param lambda - optimized lambda value (see Li et al.)
 #'
-#' @return the rescaled matrices X and K, and l
+#' @return the rescaled matrices X and K
 #'
 #' @export
 Rescaling <- function(X,L,lambda){
@@ -37,5 +37,5 @@ l = t(l)
 X.new = X
 K.new = X.new%*%t(X.new)
 
-return (list(X.new,K.new,l))
+return (list(X.new,K.new))
 }
