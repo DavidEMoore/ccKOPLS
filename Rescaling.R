@@ -23,7 +23,6 @@ H <- diag(n,n)-1/n*matrix(1,n,n)
 L <- H%*%L%*%H/((m-1)^2)
 
 l <- c()
-print(lambda)
 if (lambda > 0){
   for (i in 1:m){
     xi <- X[,i]

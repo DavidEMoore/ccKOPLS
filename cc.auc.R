@@ -104,6 +104,8 @@ cc.auc <- function(X,y,L,kfold,method){ #compute auc of method selected - curren
       K.new <- rescaled[[2]]
       modelOrg <- koplsModel(K.new[-test.inxs[[i]],-test.inxs[[i]]],ytr[-test.inxs[[i]],],1,n[i],'mc','mc')
       modelOrgPred<-koplsPredict(K.new[test.inxs[[i]],-test.inxs[[i]]],K.new[test.inxs[[i]],test.inxs[[i]]],K.new[-test.inxs[[i]],-test.inxs[[i]]],modelOrg,rescaleY=TRUE)
+      print(y)
+      print(y[test.inxs[[i]]])
       roc.curve <- roc(modelOrgPred$Yhat[,2],y[test.inxs[[i]]])
       m[[i]] <- modelOrgPred$Yhat[,2]
       #print(auc(roc.curve))
