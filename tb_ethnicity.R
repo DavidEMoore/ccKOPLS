@@ -236,9 +236,9 @@ ci <- compute.auc.ci(nox0auc.e.tb)
 left <- ci[1]
 right <- ci[2]
 mean_value <- ci[3]
-ccconf.e.tb[2,3] <- left
-ccconf.e.tb[3,3] <- right
-ccconf.e.tb[1,3] <- mean_value
+ccconf.e.tb[2,6] <- left
+ccconf.e.tb[3,6] <- right
+ccconf.e.tb[1,6] <- mean_value
 
 # #Calculate CI of ccOPLS
 # s <- sd(as.matrix(cckoplsauc.e.tb[-1]))

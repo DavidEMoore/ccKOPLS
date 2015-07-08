@@ -178,68 +178,122 @@ ccconf.a.tb <- data.frame(ccSVM=0,SVM=0,ccOPLS=0,OPLS=0,ccnox0=0,nox0=0)
 ccconf.a.tb[1:3,] <- 0
 rownames(ccconf.a.tb) <- c('auc','left','right')
 
-#Calculate CI of ccOPLS
-s <- sd(as.matrix(cckoplsauc.a.tb[-1]))
-m <- mean(as.matrix(cckoplsauc.a.tb[-1]))
-ccconf.a.tb[1,3] <- m
-n <- ncol(cckoplsauc.a.tb[-1])
-error <- s/sqrt(n)
-left <- m - 1.645*error
+#cckopls CI
+ci <- compute.auc.ci(cckoplsauc.a.tb)
+left <- ci[1]
+right <- ci[2]
+mean_value <- ci[3]
 ccconf.a.tb[2,3] <- left
-right <- m + 1.645*error
 ccconf.a.tb[3,3] <- right
+ccconf.a.tb[1,3] <- mean_value
 
-#Calculate CI of O-PLS
-s <- sd(as.matrix(koplsauc.a.tb))
-m <- mean(as.matrix(koplsauc.a.tb))
-ccconf.a.tb[1,4] <- m
-n <- ncol(koplsauc.a.tb)
-error <- s/sqrt(n)
-left <- m - 1.645*error
+#kopls CI
+ci <- compute.auc.ci(koplsauc.a.tb)
+left <- ci[1]
+right <- ci[2]
+mean_value <- ci[3]
 ccconf.a.tb[2,4] <- left
-right <- m + 1.645*error
 ccconf.a.tb[3,4] <- right
+ccconf.a.tb[1,4] <- mean_value
 
-#Calculate CI of ccSVM
-s <- sd(as.matrix(ccSVMauc.a.tb[-1]))
-m <- mean(as.matrix(ccSVMauc.a.tb[-1]))
-ccconf.a.tb[1,1] <- m
-n <- ncol(ccSVMauc.a.tb[-1])
-error <- s/sqrt(n)
-left <- m - 1.645*error
+#ccSVM CI
+ci <- compute.auc.ci(ccSVMauc.a.tb)
+left <- ci[1]
+right <- ci[2]
+mean_value <- ci[3]
 ccconf.a.tb[2,1] <- left
-right <- m + 1.645*error
 ccconf.a.tb[3,1] <- right
+ccconf.a.tb[1,1] <- mean_value
 
-#Calculate CI of SVM
-s <- sd(as.matrix(SVMauc.a.tb))
-m <- mean(as.matrix(SVMauc.a.tb))
-ccconf.a.tb[1,2] <- m
-n <- ncol(SVMauc.a.tb)
-error <- s/sqrt(n)
-left <- m - 1.645*error
+#SVM CI
+ci <- compute.auc.ci(SVMauc.a.tb)
+left <- ci[1]
+right <- ci[2]
+mean_value <- ci[3]
 ccconf.a.tb[2,2] <- left
-right <- m + 1.645*error
 ccconf.a.tb[3,2] <- right
+ccconf.a.tb[1,2] <- mean_value
 
-#Calculate CI of ccnox0
-s <- sd(as.matrix(ccnox0auc.a.tb[-1]))
-m <- mean(as.matrix(ccnox0auc.a.tb[-1]))
-ccconf.a.tb[1,5] <- m
-n <- ncol(ccnox0auc.a.tb[-1])
-error <- s/sqrt(n)
-left <- m - 1.645*error
+#ccnox0 CI
+ci <- compute.auc.ci(ccnox0auc.a.tb)
+left <- ci[1]
+right <- ci[2]
+mean_value <- ci[3]
 ccconf.a.tb[2,5] <- left
-right <- m + 1.645*error
 ccconf.a.tb[3,5] <- right
+ccconf.a.tb[1,5] <- mean_value
 
-#Calculate CI of nox0
-s <- sd(as.matrix(nox0auc.a.tb))
-m <- mean(as.matrix(nox0auc.a.tb))
-ccconf.a.tb[1,6] <- m
-n <- ncol(nox0auc.a.tb)
-error <- s/sqrt(n)
-left <- m - 1.645*error
+#nox0 CI
+ci <- compute.auc.ci(nox0auc.a.tb)
+left <- ci[1]
+right <- ci[2]
+mean_value <- ci[3]
 ccconf.a.tb[2,6] <- left
-right <- m + 1.645*error
 ccconf.a.tb[3,6] <- right
+ccconf.a.tb[1,6] <- mean_value
+
+# #Calculate CI of ccOPLS
+# s <- sd(as.matrix(cckoplsauc.a.tb[-1]))
+# m <- mean(as.matrix(cckoplsauc.a.tb[-1]))
+# ccconf.a.tb[1,3] <- m
+# n <- ncol(cckoplsauc.a.tb[-1])
+# error <- s/sqrt(n)
+# left <- m - 1.645*error
+# ccconf.a.tb[2,3] <- left
+# right <- m + 1.645*error
+# ccconf.a.tb[3,3] <- right
+# 
+# #Calculate CI of O-PLS
+# s <- sd(as.matrix(koplsauc.a.tb))
+# m <- mean(as.matrix(koplsauc.a.tb))
+# ccconf.a.tb[1,4] <- m
+# n <- ncol(koplsauc.a.tb)
+# error <- s/sqrt(n)
+# left <- m - 1.645*error
+# ccconf.a.tb[2,4] <- left
+# right <- m + 1.645*error
+# ccconf.a.tb[3,4] <- right
+# 
+# #Calculate CI of ccSVM
+# s <- sd(as.matrix(ccSVMauc.a.tb[-1]))
+# m <- mean(as.matrix(ccSVMauc.a.tb[-1]))
+# ccconf.a.tb[1,1] <- m
+# n <- ncol(ccSVMauc.a.tb[-1])
+# error <- s/sqrt(n)
+# left <- m - 1.645*error
+# ccconf.a.tb[2,1] <- left
+# right <- m + 1.645*error
+# ccconf.a.tb[3,1] <- right
+# 
+# #Calculate CI of SVM
+# s <- sd(as.matrix(SVMauc.a.tb))
+# m <- mean(as.matrix(SVMauc.a.tb))
+# ccconf.a.tb[1,2] <- m
+# n <- ncol(SVMauc.a.tb)
+# error <- s/sqrt(n)
+# left <- m - 1.645*error
+# ccconf.a.tb[2,2] <- left
+# right <- m + 1.645*error
+# ccconf.a.tb[3,2] <- right
+# 
+# #Calculate CI of ccnox0
+# s <- sd(as.matrix(ccnox0auc.a.tb[-1]))
+# m <- mean(as.matrix(ccnox0auc.a.tb[-1]))
+# ccconf.a.tb[1,5] <- m
+# n <- ncol(ccnox0auc.a.tb[-1])
+# error <- s/sqrt(n)
+# left <- m - 1.645*error
+# ccconf.a.tb[2,5] <- left
+# right <- m + 1.645*error
+# ccconf.a.tb[3,5] <- right
+# 
+# #Calculate CI of nox0
+# s <- sd(as.matrix(nox0auc.a.tb))
+# m <- mean(as.matrix(nox0auc.a.tb))
+# ccconf.a.tb[1,6] <- m
+# n <- ncol(nox0auc.a.tb)
+# error <- s/sqrt(n)
+# left <- m - 1.645*error
+# ccconf.a.tb[2,6] <- left
+# right <- m + 1.645*error
+# ccconf.a.tb[3,6] <- right
