@@ -1,140 +1,17 @@
-# 
-# 
-# library(kopls)
-# library(kernlab)
-# library(AUC)
-# library(modeest)
-# library(permute)
-# 
-# cc.auc <- function(X,y,L,kfold,method='cckopls',kfoldopt=2){
-#   t <- shuffle(nrow(X))
-#   
-#   kcauc <- matrix(0, nrow=1,ncol=kfold)
-#   ytr <- matrix(0,nrow=length(y),2)
-#   ytr[y==1,1] <- 1
-#   ytr[y==2,2] <- 1
-#   
-#   size <- round(nrow(X)/kfold)
-#   test.inxs <- list()
-#   for(i in 1:kfold){
-#     start <- 1 + size*(i-1)
-#     end <- min(nrow(X),size + size*(i-1))
-#     test.inxs[[i]] <- t[start:end]
-#   }
-#   
-#   # X is all the data
-#   # y is all the labels
-#   # test.inxs[[i]]
-#   
-#   # Optimization of parameters if any necessary  
-#   n <- c()
-#   l <- c()
-#   C = c()
-#   for (i in 1:length(test.inxs)) {
-#     train.X <- X[-test.inxs[[i]],]
-#     test.X <- X[test.inxs[[i]],]
-#     train.L <- L[-test.inxs[[i]],-test.inxs[[i]]]
-#     train.y <- y[-test.inxs[[i]]]
-#     train.ytr <- ytr[-test.inxs[[i]],]
-#     if (method == 'cckopls') {
-#       noxRange <- 0:5
-#       LambdaRange <- c(1e-8,1e-4,1e-2,1,1e+2,1e+4,1e+8)
-#       results = optimize.cckopls(train.X,train.ytr,train.L,noxRange,LambdaRange,kfoldopt)
-#       l[i] = results[1]
-#       n[i] = results[2]
-#     } else if (method == 'kopls') {
-#       noxRange <- 0:5
-#       results <- optimize.cckopls(train.X,train.ytr,noxRange,c(0),kfoldopt)
-#       l[i] = results[1]
-#       n[i] = results[2]
-#     } else if (method == 'ccsvm') {
-#       LambdaRange <- c(1e-8,1e-4,1e-2,1,1e+2,1e+4,1e+8)
-#       CRange <- c(2^-8,2^-4,2^-2,2^0,2^2,2^4,2^8)
-#       C <- parameter.setting(train.X,train.y,train.L,CRange,2)
-#       lambda <- lambda.setting(train.X,train.y,train.L,LambdaRange,C,2)
-#       # TODO finish optim. 
-#     }
-#   }
-#   
-#   m <- list()
-#   r <- list()
-#   labels <- list()
-#   
-#   for (i in 1:length(test.inxs)) {
-#     train.X <- X[-test.inxs[[i]],]
-#     test.X <- X[test.inxs[[i]],]
-#     train.L <- L[-test.inxs[[i]],-test.inxs[[i]]]
-#     train.y <- y[-test.inxs[[i]]]
-#     train.ytr <- ytr[-test.inxs[[i]],]
-#     test.y <- y[test.inxs[[i]]]
-#     test.ytr <- ytr[test.inxs[[i]],]
-#     
-#     if (method == 'cckopls' || method == 'kopls') {
-#       test.L <- L[test.inxs[[i]],test.inxs[[i]]]
-#       rescaled <- Rescaling(X,L,l[i])
-#       X.new <- rescaled[[1]]
-#       K.new <- rescaled[[2]]
-#       modelOrg <- koplsModel(K.new[-test.inxs[[i]],-test.inxs[[i]]],ytr[-test.inxs[[i]],],1,n[i],'mc','mc')
-#       modelOrgPred<-koplsPredict(K.new[test.inxs[[i]],-test.inxs[[i]]],K.new[test.inxs[[i]],test.inxs[[i]]],K.new[-test.inxs[[i]],-test.inxs[[i]]],modelOrg,rescaleY=TRUE)
-#       roc.curve <- roc(modelOrgPred$Yhat[,2],y[test.inxs[[i]]])
-#       m[[i]] <- modelOrgPred$Yhat[,2]
-#     } else if (method == 'ccsvm') {
-#       test.L <- L[test.inxs[[i]],test.inxs[[i]]]
-#       rescaled <- Rescaling(X,L,l[i])
-#       X.new <- rescaled[[1]]
-#       K.new <- rescaled[[2]]
-#       
-#       ok = F
-#       while(ok == F) {
-#         tryCatch({
-#           ksvm.obj <- ksvm(K.new[-test.ixs[[i]],-test.ixs[[i]]],ytr[-test.inxs[[i]],],C=C[i],kernel='matrix',prob.model=T,type='nu-svc')
-#           
-#           Ktest.new1 = K.new[test.inxs[[i]],test.inxs[[i]]]
-#           Ktest.new2 <- as.kernelMatrix(crossprod(t(X.new[test.ixs[[i]],]),t(X.new[SVindex(ksvm.obj), ])))  
-#           # TODO: Compare the above
-#           
-#           # predictions <- predict(ksvm.obj,Ktest.new,type='probabilities')[,2]
-#           predictions <- predict(ksvm.obj,Ktest.new,type='probabilities')[,2]
-#           # labels <- y
-#           roc.curve <- roc(predictions,y[test.inxs[[i]]])
-#           m[[i]] <- predictions
-#           ok <- T
-#         },
-#         error = function(e) {
-#           print('retrying ksvm')
-#           print('run')
-#           print(e)
-#           ok <- F
-#         })
-#       } 
-#       
-#       
-#       #modelOrg <- koplsModel(K.new[-test.inxs[[i]],-test.inxs[[i]]],ytr[-test.inxs[[i]],],1,n[i],'mc','mc')
-#       #modelOrgPred<-koplsPredict(K.new[test.inxs[[i]],-test.inxs[[i]]],K.new[test.inxs[[i]],test.inxs[[i]]],K.new[-test.inxs[[i]],-test.inxs[[i]]],modelOrg,rescaleY=TRUE)
-#       #roc.curve <- roc(modelOrgPred$Yhat[,2],y[test.inxs[[i]]])
-#     }
-#     
-#     print(auc(roc.curve))
-#     kcauc[1,i] <- auc(roc.curve)
-#     
-#     #plot(r,main='ROC Curve for ccKOPLS')
-#     labels[[i]] <- y[test.inxs[[i]]]
-#     r[[i]] <- roc.curve
-#   }
-#   
-#   return (list(kcauc,m,labels,r))
-# }
 
+###########################################################
+# This only needs to be done if you want the recent version
+library(devtools)
+install_github('Anderson-Lab/CCPredict')
+###########################################################
 
-#load the data
-# X is all the data
-# y is all the labels
-# L is the side matrix
-setwd('~/ccSVM/ccSVM/')
-X <- read.csv('X.csv',header=FALSE)
+library(CCPredict)
+
+X <- read.csv('data_sets/X.csv',header=FALSE)
 X <- t(X)
-y <- read.csv('y.csv',header=FALSE)
-L <- read.csv('L.csv',header=FALSE)
+X = scale(X,center=T,scale=T) # Scale the X data so it has a mean of 0 and a stdev of 1. Pretty standard
+y <- read.csv('data_sets/y.csv',header=FALSE)
+L <- read.csv('data_sets/L.csv',header=FALSE)
 y <- as.matrix(y)
 y <- factor(y[,1])
 L <- as.matrix(L)
@@ -154,10 +31,6 @@ ccSVM.scores <- list()   #ccSVM scores
 ccSVM.roc <- list()
 ccSVM.predict <- list()
 
-SVM.scores <- list()     #SVM scores
-SVMauc <- data.frame(SVM=0)
-SVM.roc <- list()
-SVM.predict <- list()
 
 ccnox0auc <- data.frame(ccnox0=0)
 ccnox0.scores <- list()
@@ -168,6 +41,39 @@ nox0.scores <- list()
 nox0auc <- data.frame(nox0=0)
 nox0.roc <- list()
 nox0.predict <- list()
+
+# Common parameters
+kfold <- 5
+opt.kfold <- 2
+n.iter = 50
+
+# paul - this is the one I've gotten working. The others need to be updated
+#SVM: debug
+SVM.scores <- list()     #SVM scores
+SVMauc <- matrix(0,nrow=kfold,ncol=n.iter) # changed this from a dataframe. not sure why it was
+SVM.roc <- list()
+SVM.predict <- list()
+
+set.seed(0, kind = NULL, normal.kind = NULL)
+counter = 0
+
+
+for (i in 1:n.iter) {
+  test.inxs = generate.test.inxs(nrow(X),kfold)
+  method = 'svm'
+  SVM.predict <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
+  for (j in 1:ncol(SVM.predict[[1]])){
+    SVMauc[[j,i]] <- SVM.predict[[1]][1,j] 
+  }
+  SVM.scores[[i]] <- SVM.predict[[2]]
+  SVM.roc[[i]] <- SVM.predict[[4]]
+  counter = counter + 1
+  print("SVM iteration = ")
+  print(counter)
+}
+
+
+run()
 
 #cckopls
 set.seed(0, kind = NULL, normal.kind = NULL)
@@ -209,8 +115,8 @@ for (i in 1:50) {
 set.seed(0, kind = NULL, normal.kind = NULL)
 counter = 0
 for (i in 1:50) {
+  test.inxs = generate.test.inxs(nrow(X),kfold)
   method <- 'ccsvm'
-  kfold <- 5
   ccSVMauc[1,i] <- 1 
   ccSVM.predict <- cc.auc(X,y,L,kfold,method=method)
   for (j in 1:ncol(ccSVM.predict[[1]])){
@@ -223,23 +129,6 @@ for (i in 1:50) {
   print(counter)
 }
 
-#SVM: debug
-set.seed(0, kind = NULL, normal.kind = NULL)
-counter = 0
-for (i in 1:50) {
-  method = 'svm'
-  kfold = 5
-  SVMauc[1,i] <- 1
-  SVM.predict <- cc.auc(X,y,L,kfold,method=method)
-  for (j in 1:ncol(SVM.predict[[1]])){
-    SVMauc[[j,i]] <- SVM.predict[[1]][1,j] 
-  }
-  SVM.scores[[i]] <- SVM.predict[[2]]
-  SVM.roc[[i]] <- SVM.predict[[4]]
-  counter = counter + 1
-  print("SVM iteration = ")
-  print(counter)
-}
 
 #ccnox0
 set.seed(0, kind = NULL, normal.kind = NULL)

@@ -1,5 +1,5 @@
 compute.auc.ci <- function(auc_results) {
-iteration_means = colMeans(cckopls)[2:ncol(cckopls)]
+iteration_means = colMeans(auc_results)[2:ncol(auc_results)]
 stdev = sd(iteration_means)
 mean_value = mean(iteration_means)
 ci_upper = mean_value + 1.96*stdev/sqrt(length(iteration_means))
@@ -18,3 +18,9 @@ print(compute.auc.ci(ccnox0))
 
 nox0 = read.csv('auc_files/nox0_auc.csv')
 print(compute.auc.ci(nox0))
+
+ccnox0_tb = read.csv('auc_files/ccnox0_tb_auc.csv')
+print(compute.auc.ci(ccnox0_tb))
+
+nox0_tb = read.csv('auc_files/nox0_tb_auc.csv')
+print(compute.auc.ci(nox0_tb))

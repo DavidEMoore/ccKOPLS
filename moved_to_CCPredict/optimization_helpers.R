@@ -170,7 +170,7 @@ optimize.ccSVM <- function(X,ytr,L,CRange,LambdaRange,kfold=2){ #optimize ccSVM 
       ok <- F
       while(ok == F) {
         tryCatch({
-          ksvm.obj <- ksvm(K.new[-test,-test],ytr[-test],C=c,kernel='matrix',prob.model=T,type='nu-svc')
+          ksvm.obj <- ksvm(K.new[-test,-test],ytr[-test],C=c,kernel='matrix',prob.model=T)#,type='nu-svc')
           Ktest.new <- as.kernelMatrix(crossprod(t(X.new[test,]),t(X.new[SVindex(ksvm.obj), ])))  
           predictions <- predict(ksvm.obj,Ktest.new,type='probabilities')[,2]
           labels <- ytr[test]
