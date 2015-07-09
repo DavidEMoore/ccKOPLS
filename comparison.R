@@ -67,9 +67,8 @@ for (i in 1:n.iter) {
   }
   SVM.scores[[i]] <- SVM.predict[[2]]
   SVM.roc[[i]] <- SVM.predict[[4]]
-  counter = counter + 1
   print("SVM iteration = ")
-  print(counter)
+  print(n.iter)
 }
 
 
