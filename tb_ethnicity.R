@@ -20,7 +20,10 @@ y.tb[which(grepl('Active',y.tb))] <- 1
 y.tb <- as.numeric(y.tb)
 y.tb <- as.matrix(y.tb)
 y.tb <- factor(y.tb[,1])
-y.tb <- sample(y.tb)
+set.seed(0, kind=NULL, normal.kind=NULL)
+samp <- sample(c(1:nrow(X.tb)))
+y.tb <- y.tb[samp]
+X.tb <- X.tb[samp,]
 
 e.tb <- as.matrix(e.tb)
 for (i in 1:nrow(e.tb)){
@@ -76,7 +79,7 @@ nox0.predict.e.tb <- list()
 #cckopls
 set.seed(0, kind = NULL, normal.kind = NULL)
 counter = 0
-for (i in 1:50) {
+for (i in 1:5) {
   method <- 'cckopls'
   kfold <- 5
   cckoplsauc.e.tb[1,i] <- 1

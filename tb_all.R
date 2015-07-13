@@ -22,7 +22,10 @@ y.tb[which(grepl('Active',y.tb))] <- 1
 y.tb <- as.numeric(y.tb)
 y.tb <- as.matrix(y.tb)
 y.tb <- factor(y.tb[,1])
-y.tb <- sample(y.tb)
+set.seed(0, kind=NULL, normal.kind=NULL)
+samp <- sample(c(1:nrow(X.tb)))
+y.tb <- y.tb[samp]
+X.tb <- X.tb[samp,]
 
 g.tb <- as.matrix(g.tb)
 g.tb[which(grepl('Male',g.tb))] <- 'Male'
