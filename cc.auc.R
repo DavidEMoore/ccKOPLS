@@ -16,10 +16,14 @@ library(CCPredict)
 cc.auc <- function(X,y,L,kfold,opt.kfold,test.inxs,method,cluster.size=8){ #compute auc of method selected - currently kopls/SVM
   kcauc <- matrix(0, nrow=1,ncol=kfold)
 
+  ytr <- matrix(0,nrow=length(y),2)
+  ytr[y==1,1] <- 1
+  ytr[y==2,2] <- 1
+  
   # Optimization of parameters if any necessary  
   n <- vector(length=length(test.inxs),mode='numeric')
   l <- vector(length=length(test.inxs),mode='numeric')
-  C = vector(length=length(test.inxs),mode='numeric')
+  C <- vector(length=length(test.inxs),mode='numeric')
   for(i in 1:length(test.inxs)) {
     train.X <- X[-test.inxs[[i]],]
     test.X <- X[test.inxs[[i]],]

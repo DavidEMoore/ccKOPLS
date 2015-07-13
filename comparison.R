@@ -9,55 +9,53 @@ library(CCPredict)
 
 X <- read.csv('data_sets/X.csv',header=FALSE)
 X <- t(X)
-X = scale(X,center=T,scale=T) # Scale the X data so it has a mean of 0 and a stdev of 1. Pretty standard
+
+#not for microarray data set
+#X = scale(X,center=T,scale=T) # Scale the X data so it has a mean of 0 and a stdev of 1. Pretty standard
+
 y <- read.csv('data_sets/y.csv',header=FALSE)
 L <- read.csv('data_sets/L.csv',header=FALSE)
 y <- as.matrix(y)
-y <- factor(y[,1])
+y <- factor(y)
 L <- as.matrix(L)
 
-cckoplsauc1 <- data.frame(ccKOPLS=0)
-cckopls.scores1 <- list() #cckopls scores
-cckopls.roc1 <- list()    #roc curves
-cckopls.predict1 <- list()
+# Common parameters
+kfold <- 5      #computing auc
+opt.kfold <- 2  #optimizing params
+n.iter = 50     #iterations
 
-koplsauc <- data.frame(KOPLS=0)
-kopls.scores <- list()   #kopls scores
+cckoplsauc <- matrix(0,nrow=kfold,ncol=n.iter)
+cckopls.scores <- list() #scores
+cckopls.roc <- list()    #roc curves
+cckopls.predict <- list() #labels
+
+koplsauc <- matrix(0,nrow=kfold,ncol=n.iter)
+kopls.scores <- list()
 kopls.roc <- list()
 kopls.predict <- list()
 
-ccSVMauc <- data.frame(ccSVM=0)
-ccSVM.scores <- list()   #ccSVM scores 
+ccSVMauc <- matrix(0,nrow=kfold,ncol=n.iter)
+ccSVM.scores <- list()
 ccSVM.roc <- list()
 ccSVM.predict <- list()
 
-
-ccnox0auc <- data.frame(ccnox0=0)
+ccnox0auc <- matrix(0,nrow=kfold,ncol=n.iter)
 ccnox0.scores <- list()
 ccnox0.roc <- list()
 ccnox0.predict <- list()
 
 nox0.scores <- list()
-nox0auc <- data.frame(nox0=0)
+nox0auc <- matrix(0,nrow=kfold,ncol=n.iter)
 nox0.roc <- list()
 nox0.predict <- list()
 
-# Common parameters
-kfold <- 5
-opt.kfold <- 2
-n.iter = 50
-
-# paul - this is the one I've gotten working. The others need to be updated
-#SVM: debug
-SVM.scores <- list()     #SVM scores
-SVMauc <- matrix(0,nrow=kfold,ncol=n.iter) # changed this from a dataframe. not sure why it was
+SVM.scores <- list()
+SVMauc <- matrix(0,nrow=kfold,ncol=n.iter)
 SVM.roc <- list()
 SVM.predict <- list()
 
+#SVM
 set.seed(0, kind = NULL, normal.kind = NULL)
-counter = 0
-
-
 for (i in 1:n.iter) {
   test.inxs = generate.test.inxs(nrow(X),kfold)
   method = 'svm'
@@ -72,165 +70,140 @@ for (i in 1:n.iter) {
 }
 
 
-run()
-
 #cckopls
 set.seed(0, kind = NULL, normal.kind = NULL)
-counter = 0
-for (i in 1:50) {
+for (i in 1:n.iter) {
+  test.inxs = generate.test.inxs(nrow(X),kfold)
   method <- 'cckopls'
-  kfold <- 5
-  cckoplsauc1[1,i] <- 1
-  cckopls.predict1 <- cc.auc(X,y,L,kfold,method=method)
+  cckopls.predict <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
   for (j in 1:ncol(cckopls.predict1[[1]])){
-    cckoplsauc1[[j,i]] <- cckopls.predict1[[1]][1,j] 
+    cckoplsauc[[j,i]] <- cckopls.predict[[1]][1,j] 
   }
-  cckopls.scores1[[i]] <- cckopls.predict1[[2]]
-  cckopls.roc1[[i]] <- cckopls.predict1[[4]]
-  counter = counter + 1
+  cckopls.scores[[i]] <- cckopls.predict[[2]]
+  cckopls.roc[[i]] <- cckopls.predict[[4]]
   print("cckopls iteration = ")
-  print(counter)
+  print(n.iter)
 }
+
+run()
+
+
 
 #kopls
 set.seed(0, kind = NULL, normal.kind = NULL)
-counter = 0
 for (i in 1:50) {
+  test.inxs = generate.test.inxs(nrow(X),kfold)
   method <- 'kopls'
-  kfold <- 5
-  koplsauc[1,i] <- 1
-  kopls.predict <- cc.auc(X,y,L,kfold,method=method)
+  kopls.predict <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
   for (j in 1:ncol(kopls.predict[[1]])){
     koplsauc[[j,i]] <- kopls.predict[[1]][1,j] 
   }
   kopls.scores[[i]] <- kopls.predict[[2]]
   kopls.roc[[i]] <- kopls.predict[[4]]
-  counter = counter + 1
   print("kopls iteration = ")
-  print(counter)
+  print(n.iter)
 }
 
 #ccSVM
 set.seed(0, kind = NULL, normal.kind = NULL)
-counter = 0
 for (i in 1:50) {
   test.inxs = generate.test.inxs(nrow(X),kfold)
   method <- 'ccsvm'
-  ccSVMauc[1,i] <- 1 
-  ccSVM.predict <- cc.auc(X,y,L,kfold,method=method)
+  ccSVM.predict <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
   for (j in 1:ncol(ccSVM.predict[[1]])){
     ccSVMauc[[j,i]] <- ccSVM.predict[[1]][1,j] 
   }
   ccSVM.scores[[i]] <- ccSVM.predict[[2]]
   ccSVM.roc[[i]] <- ccSVM.predict[[4]]
-  counter = counter + 1
   print("ccSVM iteration = ")
-  print(counter)
+  print(n.iter)
 }
 
 
 #ccnox0
 set.seed(0, kind = NULL, normal.kind = NULL)
-counter = 0
 for (i in 1:50) {
+  test.inxs = generate.test.inxs(nrow(X),kfold)
   method = 'ccnox0'
-  kfold = 5
-  ccnox0auc[1,i] <- 1
-  ccnox0.predict <- cc.auc(X,y,L,kfold,method=method)
+  ccnox0.predict <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
   for (j in 1:ncol(ccnox0.predict[[1]])){
     ccnox0auc[[j,i]] <- ccnox0.predict[[1]][1,j] 
   }
   ccnox0.scores[[i]] <- ccnox0.predict[[2]]
   ccnox0.roc[[i]] <- ccnox0.predict[[4]]
-  counter = counter + 1
   print("ccnox0 iteration = ")
-  print(counter)
+  print(n.iter)
 }
 
 #nox0
 set.seed(0, kind = NULL, normal.kind = NULL)
-counter = 0
 for (i in 1:50) {
+  test.inxs = generate.test.inxs(nrow(X),kfold)
   method = 'nox0'
-  kfold = 5
-  nox0auc[1,i] <- 1
-  nox0.predict <- cc.auc(X,y,L,kfold,method=method)
+  nox0.predict <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
   for (j in 1:ncol(nox0.predict[[1]])){
     nox0auc[[j,i]] <- nox0.predict[[1]][1,j] 
   }
   nox0.scores[[i]] <- nox0.predict[[2]]
   nox0.roc[[i]] <- nox0.predict[[4]]
-  counter = counter + 1
   print("nox0 iteration = ")
-  print(counter)
+  print(n.iter)
 }
 
-ccconf1 <- data.frame(ccSVM=0,SVM=0,ccOPLS=0,OPLS=0,ccnox0=0,nox0=0)
-ccconf1[1:3,] <- 0
-rownames(ccconf1) <- c('auc','left','right')
+ccconf <- data.frame(ccSVM=0,SVM=0,ccOPLS=0,OPLS=0,ccnox0=0,nox0=0)
+ccconf[1:3,] <- 0
+rownames(ccconf) <- c('auc','left','right')
 
 #Calculate CI of ccOPLS
-s <- sd(as.matrix(cckoplsauc1[-1]))
-m <- mean(as.matrix(cckoplsauc1[-1]))
-ccconf1[1,3] <- m
-n <- ncol(cckoplsauc1[-1])
-error <- s/sqrt(n)
-left <- m - 1.645*error
-ccconf1[2,3] <- left
-right <- m + 1.645*error
-ccconf1[3,3] <- right
+ci <- compute.auc.ci(cckoplsauc)
+left <- ci[1]
+right <- ci[2]
+mean_value <- ci[3]
+ccconf[2,3] <- left
+ccconf[3,3] <- right
+ccconf[1,3] <- mean_value
 
 #Calculate CI of O-PLS
-s <- sd(as.matrix(koplsauc))
-m <- mean(as.matrix(koplsauc))
-ccconf1[1,4] <- m
-n <- ncol(koplsauc)
-error <- s/sqrt(n)
-left <- m - 1.645*error
-ccconf1[2,4] <- left
-right <- m + 1.645*error
-ccconf1[3,4] <- right
+ci <- compute.auc.ci(koplsauc)
+left <- ci[1]
+right <- ci[2]
+mean_value <- ci[3]
+ccconf[2,4] <- left
+ccconf[3,4] <- right
+ccconf[1,4] <- mean_value
 
 #Calculate CI of ccSVM
-s <- sd(as.matrix(ccSVMauc[-1]))
-m <- mean(as.matrix(ccSVMauc[-1]))
-ccconf1[1,1] <- m
-n <- ncol(ccSVMauc[-1])
-error <- s/sqrt(n)
-left <- m - 1.645*error
-ccconf1[2,1] <- left
-right <- m + 1.645*error
-ccconf1[3,1] <- right
+ci <- compute.auc.ci(ccSVMauc)
+left <- ci[1]
+right <- ci[2]
+mean_value <- ci[3]
+ccconf[2,1] <- left
+ccconf[3,1] <- right
+ccconf[1,1] <- mean_value
 
 #Calculate CI of SVM
-s <- sd(as.matrix(SVMauc))
-m <- mean(as.matrix(SVMauc))
-ccconf1[1,2] <- m
-n <- ncol(SVMauc)
-error <- s/sqrt(n)
-left <- m - 1.645*error
-ccconf1[2,2] <- left
-right <- m + 1.645*error
-ccconf1[3,2] <- right
+ci <- compute.auc.ci(SVMauc)
+left <- ci[1]
+right <- ci[2]
+mean_value <- ci[3]
+ccconf[2,2] <- left
+ccconf[3,2] <- right
+ccconf[1,2] <- mean_value
 
 #Calculate CI of ccnox0
-s <- sd(as.matrix(ccnox0auc[-1]))
-m <- mean(as.matrix(ccnox0auc[-1]))
-ccconf1[1,5] <- m
-n <- ncol(ccnox0auc[-1])
-error <- s/sqrt(n)
-left <- m - 1.645*error
-ccconf1[2,5] <- left
-right <- m + 1.645*error
-ccconf1[3,5] <- right
+ci <- compute.auc.ci(ccnox0auc)
+left <- ci[1]
+right <- ci[2]
+mean_value <- ci[3]
+ccconf[2,5] <- left
+ccconf[3,5] <- right
+ccconf[1,5] <- mean_value
 
 #Calculate CI of nox0
-s <- sd(as.matrix(nox0auc))
-m <- mean(as.matrix(nox0auc))
-ccconf1[1,6] <- m
-n <- ncol(nox0auc)
-error <- s/sqrt(n)
-left <- m - 1.645*error
-ccconf1[2,6] <- left
-right <- m + 1.645*error
-ccconf1[3,6] <- right
+ci <- compute.auc.ci(nox0aux)
+left <- ci[1]
+right <- ci[2]
+mean_value <- ci[3]
+ccconf[2,6] <- left
+ccconf[3,6] <- right
+ccconf[1,6] <- mean_value
