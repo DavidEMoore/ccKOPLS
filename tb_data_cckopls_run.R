@@ -11,7 +11,7 @@ df.tb <- df.tb[sort(c(A.tb,a.tb,c.tb)),]
 y.tb <- df.tb[1]
 y.tb <- as.matrix(y.tb)
 g.tb <- df.tb[2] #confounders
-df.tb <- df.tb[,-c(1,2)]
+df.tb <- df.tb[,-c(1,2,3,4)]
 
 X.tb <- as.matrix(df.tb)
 
@@ -21,7 +21,10 @@ y.tb[which(grepl('Active',y.tb))] <- 1
 y.tb <- as.numeric(y.tb)
 y.tb <- as.matrix(y.tb)
 y.tb <- factor(y.tb[,1])
-y.tb <- sample(y.tb)
+set.seed(0, kind=NULL, normal.kind=NULL)
+samp <- sample(c(1:nrow(X.tb)))
+y.tb <- y.tb[samp]
+X.tb <- X.tb[samp,]
 
 g.tb <- as.matrix(g.tb)
 g.tb[which(grepl('Male',g.tb))] <- 'Male'

@@ -2,6 +2,8 @@
 ###########################################################
 # This only needs to be done if you want the recent version
 library(devtools)
+#dependencies - git2r, rversions, xml2, curl
+#apt-get install libs for git2r, xml2, curl
 install_github('Anderson-Lab/CCPredict')
 ###########################################################
 
@@ -24,10 +26,10 @@ kfold <- 5      #computing auc
 opt.kfold <- 2  #optimizing params
 n.iter = 50     #iterations
 
-cckoplsauc <- matrix(0,nrow=kfold,ncol=n.iter)
-cckopls.scores <- list() #scores
-cckopls.roc <- list()    #roc curves
-cckopls.predict <- list() #labels
+cckoplsauc.test <- matrix(0,nrow=kfold,ncol=n.iter)
+cckopls.scores.test <- list() #scores
+cckopls.roc.test <- list()    #roc curves
+cckopls.predict.test <- list() #labels
 
 koplsauc <- matrix(0,nrow=kfold,ncol=n.iter)
 kopls.scores <- list()
@@ -75,7 +77,7 @@ set.seed(0, kind = NULL, normal.kind = NULL)
 for (i in 1:n.iter) {
   test.inxs = generate.test.inxs(nrow(X),kfold)
   method <- 'cckopls'
-  cckopls.predict <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
+  cckopls.predict.test <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
   for (j in 1:ncol(cckopls.predict1[[1]])){
     cckoplsauc[[j,i]] <- cckopls.predict[[1]][1,j] 
   }
