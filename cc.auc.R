@@ -13,7 +13,7 @@ library(CCPredict)
 #' @return kcauc, m, labels, r
 #'
 #' @export
-cc.auc <- function(X,y,L,kfold,opt.kfold,test.inxs,method,cluster.size=8){ #compute auc of method selected - currently kopls/SVM
+cc.auc <- function(X,y,L,kfold,opt.kfold,test.inxs,method,cluster.size){ #compute auc of method selected - currently kopls/SVM
   kcauc <- matrix(0, nrow=1,ncol=kfold)
 
   ytr <- matrix(0,nrow=length(y),2)
