@@ -9,14 +9,14 @@ install_github('Anderson-Lab/CCPredict')
 
 library(CCPredict)
 
-X <- read.csv('~/ccSVM/ccSVM/data_sets/X.csv',header=FALSE)
+X <- read.csv('~/dev/CCPredictStudy/data_sets/X.csv',header=FALSE)
 X <- t(X)
 
 #not for microarray data set
 #X = scale(X,center=T,scale=T) # Scale the X data so it has a mean of 0 and a stdev of 1. Pretty standard
 
-y <- read.csv('~/ccSVM/ccSVM/data_sets/y.csv',header=FALSE)
-L <- read.csv('~/ccSVM/ccSVM/data_sets/L.csv',header=FALSE)
+y <- read.csv('~/dev/CCPredictStudy/data_sets/y.csv',header=FALSE)
+L <- read.csv('~/dev/CCPredictStudy/data_sets/L.csv',header=FALSE)
 y <- as.matrix(y)
 y <- factor(y)
 L <- as.matrix(L)
@@ -58,6 +58,7 @@ SVM.predict <- list()
 
 #SVM
 set.seed(0, kind = NULL, normal.kind = NULL)
+counter <- 0
 for (i in 1:n.iter) {
   test.inxs = generate.test.inxs(nrow(X),kfold)
   method = 'svm'
@@ -68,12 +69,14 @@ for (i in 1:n.iter) {
   SVM.scores[[i]] <- SVM.predict[[2]]
   SVM.roc[[i]] <- SVM.predict[[4]]
   print("SVM iteration = ")
-  print(n.iter)
+  counter <- counter + 1
+  print(counter)
 }
 
 
 #cckopls
 set.seed(0, kind = NULL, normal.kind = NULL)
+counter <- 0
 for (i in 1:n.iter) {
   test.inxs = generate.test.inxs(nrow(X),kfold)
   method <- 'cckopls'
@@ -84,15 +87,14 @@ for (i in 1:n.iter) {
   cckopls.scores.test[[i]] <- cckopls.predict.test[[2]]
   cckopls.roc.test[[i]] <- cckopls.predict.test[[4]]
   print("cckopls iteration = ")
-  print(n.iter)
+  counter <- counter + 1
+  print(counter)
 }
-
-run()
-
 
 
 #kopls
 set.seed(0, kind = NULL, normal.kind = NULL)
+counter <- 0
 for (i in 1:n.iter) {
   test.inxs = generate.test.inxs(nrow(X),kfold)
   method <- 'kopls'
@@ -103,11 +105,13 @@ for (i in 1:n.iter) {
   kopls.scores.test[[i]] <- kopls.predict.test[[2]]
   kopls.roc.test[[i]] <- kopls.predict.test[[4]]
   print("kopls iteration = ")
-  print(n.iter)
+  counter <- counter + 1
+  print(counter)
 }
 
 #ccSVM
 set.seed(0, kind = NULL, normal.kind = NULL)
+counter <- 0
 for (i in 1:50) {
   test.inxs = generate.test.inxs(nrow(X),kfold)
   method <- 'ccsvm'
@@ -118,13 +122,15 @@ for (i in 1:50) {
   ccSVM.scores[[i]] <- ccSVM.predict[[2]]
   ccSVM.roc[[i]] <- ccSVM.predict[[4]]
   print("ccSVM iteration = ")
-  print(n.iter)
+  counter <- counter + 1
+  print(counter)
 }
 
 
 #ccnox0
 set.seed(0, kind = NULL, normal.kind = NULL)
-for (i in 1:50) {
+counter <- 0
+for (i in 1:n.iter) {
   test.inxs = generate.test.inxs(nrow(X),kfold)
   method = 'ccnox0'
   ccnox0.predict <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
@@ -134,12 +140,14 @@ for (i in 1:50) {
   ccnox0.scores[[i]] <- ccnox0.predict[[2]]
   ccnox0.roc[[i]] <- ccnox0.predict[[4]]
   print("ccnox0 iteration = ")
-  print(n.iter)
+  counter <- counter + 1
+  print(counter)
 }
 
 #nox0
 set.seed(0, kind = NULL, normal.kind = NULL)
-for (i in 1:50) {
+counter <- 0
+for (i in 1:n.iter) {
   test.inxs = generate.test.inxs(nrow(X),kfold)
   method = 'nox0'
   nox0.predict <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
@@ -149,7 +157,8 @@ for (i in 1:50) {
   nox0.scores[[i]] <- nox0.predict[[2]]
   nox0.roc[[i]] <- nox0.predict[[4]]
   print("nox0 iteration = ")
-  print(n.iter)
+  counter <- counter + 1
+  print(counter)
 }
 
 ccconf <- data.frame(ccSVM=0,SVM=0,ccOPLS=0,OPLS=0,ccnox0=0,nox0=0)
@@ -202,7 +211,7 @@ ccconf[3,5] <- right
 ccconf[1,5] <- mean_value
 
 #Calculate CI of nox0
-ci <- compute.auc.ci(nox0aux)
+ci <- compute.auc.ci(nox0auc)
 left <- ci[1]
 right <- ci[2]
 mean_value <- ci[3]
