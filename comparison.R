@@ -26,15 +26,15 @@ kfold <- 5      #computing auc
 opt.kfold <- 2  #optimizing params
 n.iter = 50     #iterations
 
-cckoplsauc.test <- matrix(0,nrow=kfold,ncol=n.iter)
-cckopls.scores.test <- list() #scores
-cckopls.roc.test <- list()    #roc curves
-cckopls.predict.test <- list() #labels
+cckoplsauc <- matrix(0,nrow=kfold,ncol=n.iter)
+cckopls.scores <- list() #scores
+cckopls.roc <- list()    #roc curves
+cckopls.predict <- list() #labels
 
-koplsauc.test <- matrix(0,nrow=kfold,ncol=n.iter)
-kopls.scores.test <- list()
-kopls.roc.test <- list()
-kopls.predict.test <- list()
+koplsauc <- matrix(0,nrow=kfold,ncol=n.iter)
+kopls.scores <- list()
+kopls.roc <- list()
+kopls.predict <- list()
 
 ccSVMauc <- matrix(0,nrow=kfold,ncol=n.iter)
 ccSVM.scores <- list()
@@ -55,24 +55,6 @@ SVM.scores <- list()
 SVMauc <- matrix(0,nrow=kfold,ncol=n.iter)
 SVM.roc <- list()
 SVM.predict <- list()
-
-#SVM
-set.seed(0, kind = NULL, normal.kind = NULL)
-counter <- 0
-for (i in 1:n.iter) {
-  test.inxs = generate.test.inxs(nrow(X),kfold)
-  method = 'svm'
-  SVM.predict <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
-  for (j in 1:ncol(SVM.predict[[1]])){
-    SVMauc[[j,i]] <- SVM.predict[[1]][1,j] 
-  }
-  SVM.scores[[i]] <- SVM.predict[[2]]
-  SVM.roc[[i]] <- SVM.predict[[4]]
-  print("SVM iteration = ")
-  counter <- counter + 1
-  print(counter)
-}
-
 
 #cckopls
 set.seed(0, kind = NULL, normal.kind = NULL)
@@ -126,6 +108,22 @@ for (i in 1:50) {
   print(counter)
 }
 
+#SVM
+set.seed(0, kind = NULL, normal.kind = NULL)
+counter <- 0
+for (i in 1:n.iter) {
+  test.inxs = generate.test.inxs(nrow(X),kfold)
+  method = 'svm'
+  SVM.predict <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
+  for (j in 1:ncol(SVM.predict[[1]])){
+    SVMauc[[j,i]] <- SVM.predict[[1]][1,j] 
+  }
+  SVM.scores[[i]] <- SVM.predict[[2]]
+  SVM.roc[[i]] <- SVM.predict[[4]]
+  print("SVM iteration = ")
+  counter <- counter + 1
+  print(counter)
+}
 
 #ccnox0
 set.seed(0, kind = NULL, normal.kind = NULL)
