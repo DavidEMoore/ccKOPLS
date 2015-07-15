@@ -9,14 +9,14 @@ install_github('Anderson-Lab/CCPredict')
 
 library(CCPredict)
 
-X <- read.csv('data_sets/X.csv',header=FALSE)
+X <- read.csv('~/ccSVM/ccSVM/data_sets/X.csv',header=FALSE)
 X <- t(X)
 
 #not for microarray data set
 #X = scale(X,center=T,scale=T) # Scale the X data so it has a mean of 0 and a stdev of 1. Pretty standard
 
-y <- read.csv('data_sets/y.csv',header=FALSE)
-L <- read.csv('data_sets/L.csv',header=FALSE)
+y <- read.csv('~/ccSVM/ccSVM/data_sets/y.csv',header=FALSE)
+L <- read.csv('~/ccSVM/ccSVM/data_sets/L.csv',header=FALSE)
 y <- as.matrix(y)
 y <- factor(y)
 L <- as.matrix(L)
@@ -31,10 +31,10 @@ cckopls.scores.test <- list() #scores
 cckopls.roc.test <- list()    #roc curves
 cckopls.predict.test <- list() #labels
 
-koplsauc <- matrix(0,nrow=kfold,ncol=n.iter)
-kopls.scores <- list()
-kopls.roc <- list()
-kopls.predict <- list()
+koplsauc.test <- matrix(0,nrow=kfold,ncol=n.iter)
+kopls.scores.test <- list()
+kopls.roc.test <- list()
+kopls.predict.test <- list()
 
 ccSVMauc <- matrix(0,nrow=kfold,ncol=n.iter)
 ccSVM.scores <- list()
@@ -77,12 +77,12 @@ set.seed(0, kind = NULL, normal.kind = NULL)
 for (i in 1:n.iter) {
   test.inxs = generate.test.inxs(nrow(X),kfold)
   method <- 'cckopls'
-  cckopls.predict.test <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
-  for (j in 1:ncol(cckopls.predict1[[1]])){
-    cckoplsauc[[j,i]] <- cckopls.predict[[1]][1,j] 
+  cckopls.predict.test <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=4)
+  for (j in 1:ncol(cckopls.predict.test[[1]])){
+    cckoplsauc.test[[j,i]] <- cckopls.predict.test[[1]][1,j] 
   }
-  cckopls.scores[[i]] <- cckopls.predict[[2]]
-  cckopls.roc[[i]] <- cckopls.predict[[4]]
+  cckopls.scores.test[[i]] <- cckopls.predict.test[[2]]
+  cckopls.roc.test[[i]] <- cckopls.predict.test[[4]]
   print("cckopls iteration = ")
   print(n.iter)
 }
@@ -93,15 +93,15 @@ run()
 
 #kopls
 set.seed(0, kind = NULL, normal.kind = NULL)
-for (i in 1:50) {
+for (i in 1:n.iter) {
   test.inxs = generate.test.inxs(nrow(X),kfold)
   method <- 'kopls'
-  kopls.predict <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=8)
-  for (j in 1:ncol(kopls.predict[[1]])){
-    koplsauc[[j,i]] <- kopls.predict[[1]][1,j] 
+  kopls.predict.test <- cc.auc(X,y,L,kfold,opt.kfold,test.inxs,method=method,cluster.size=5)
+  for (j in 1:ncol(kopls.predict.test[[1]])){
+    koplsauc.test[[j,i]] <- kopls.predict.test[[1]][1,j] 
   }
-  kopls.scores[[i]] <- kopls.predict[[2]]
-  kopls.roc[[i]] <- kopls.predict[[4]]
+  kopls.scores.test[[i]] <- kopls.predict.test[[2]]
+  kopls.roc.test[[i]] <- kopls.predict.test[[4]]
   print("kopls iteration = ")
   print(n.iter)
 }
