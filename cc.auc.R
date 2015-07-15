@@ -78,22 +78,7 @@ cc.auc <- function(X,y,L,kfold,opt.kfold,test.inxs,method,cluster.size=8){ #comp
   #for (i in 1:length(test.inxs)) { # left here for testing purposes
   all.results <- foreach(i = 1:length(test.inxs),.packages=c("CCPredict")) %dopar% {
     if (method == 'cckopls' || method == 'kopls' || method == 'ccnox0' || method == 'nox0') {
-<<<<<<< HEAD
       results <- predict.cckopls(X,y,L,test.inxs[[i]],l[i],n[i])
-=======
-      print('finding auc...')
-      test.L <- L[test.inxs[[i]],test.inxs[[i]]]
-      rescaled <- Rescaling(X,L,l[i])
-      X.new <- rescaled[[1]]
-      K.new <- rescaled[[2]]
-      modelOrg <- koplsModel(K.new[-test.inxs[[i]],-test.inxs[[i]]],ytr[-test.inxs[[i]],],1,n[i],'mc','mc')
-      modelOrgPred<-koplsPredict(K.new[test.inxs[[i]],-test.inxs[[i]]],K.new[test.inxs[[i]],test.inxs[[i]]],K.new[-test.inxs[[i]],-test.inxs[[i]]],modelOrg,rescaleY=TRUE)
-      print(y)
-      print(y[test.inxs[[i]]])
-      roc.curve <- roc(modelOrgPred$Yhat[,2],y[test.inxs[[i]]])
-      m[[i]] <- modelOrgPred$Yhat[,2]
-      #print(auc(roc.curve))
->>>>>>> 32c96ce436c19dd6966f45ad9a5253cbe4051563
     } else if (method == 'ccsvm' || method == 'svm') {
       results <- predict.ccsvm(X,y,L,test.inxs[[i]],l[i],C[i])
     } #end of ccSVM
