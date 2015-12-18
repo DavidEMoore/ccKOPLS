@@ -81,7 +81,6 @@ cc.auc <- function(X,y,L,kfold,opt.kfold,test.inxs,method,cluster.size){ #comput
   all.results <- foreach(i = 1:length(test.inxs),.packages=c("CCPredict")) %dopar% {
     if (method == 'cckopls' || method == 'kopls' || method == 'ccnox0' || method == 'nox0') {
       results <- predict.cckopls(X,y,L,test.inxs[[i]],l[i],n[i])
-<<<<<<< HEAD
       print('finding auc...')
       test.L <- L[test.inxs[[i]],test.inxs[[i]]]
       rescaled <- Rescaling(X,L,l[i])
@@ -94,8 +93,6 @@ cc.auc <- function(X,y,L,kfold,opt.kfold,test.inxs,method,cluster.size){ #comput
       roc.curve <- roc(modelOrgPred$Yhat[,2],y[test.inxs[[i]]])
       m[[i]] <- modelOrgPred$Yhat[,2]
       #print(auc(roc.curve))
-=======
->>>>>>> e482672bf4643e3e192e9e4b7f0b1393778abe81
     } else if (method == 'ccsvm' || method == 'svm') {
       results <- predict.ccsvm(X,y,L,test.inxs[[i]],l[i],C[i])
     } #end of ccSVM
